@@ -19,6 +19,14 @@ app.get('/api/hello', function(req, res) {
   res.json({ greeting: 'hello API' });
 });
 
+//Mount middleware to parse form data
+app.use(express.urlencoded({ extended: true}));
+
+app.post("/api/shorturl", (req, res) => {
+  let originalUrl = req.body.url;
+  res.json({ original_url : originalUrl, short_url : 1})
+})
+
 app.listen(port, function() {
   console.log(`Listening on port ${port}`);
 });
