@@ -33,20 +33,22 @@ app.post("/api/shorturl", (req, res) => {
 
 app.get("/api/shorturl/:short_url", (req, res) => {
   let shortUrl = req.params.short_url
-  let foundUrl = null;
+  let foundUrls = null;
 
   for (let i = 0; i < urls.length; i++) {
     if (urls[i].short_url == shortUrl) {
-      foundUrl = urls[i];
+      foundUrls = urls[i];
       break; // exit the loop once a match is found
     }       
   }
 
-  if (foundUrl !== null && foundUrl !== undefined) {
-    res.send({ "original_url": foundUrl });
+  if (foundUrls !== null && foundUrls !== undefined) {
+    res.redirect(foundUrls.original_url);
+    // res.send({ "original_url": foundUrls });
   } else  {
     res.json({ "error": "original url not found from short url"})
   }
+  
 })
 
 app.listen(port, function() {
