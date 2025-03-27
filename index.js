@@ -34,9 +34,9 @@ app.post("/api/shorturl", (req, res) => {
 app.get("/api/shorturl/:short_url", (req, res) => {
   let shortUrl = req.params.short_url
   let foundUrl = null;
-  
+
   for (let i = 0; i < urls.length; i++) {
-    if (urls[i].short_url === shortUrl) {
+    if (urls[i].short_url == shortUrl) {
       foundUrl = urls[i];
       break; // exit the loop once a match is found
     }       
