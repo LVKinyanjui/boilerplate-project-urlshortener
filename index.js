@@ -6,6 +6,8 @@ const app = express();
 // Basic Configuration
 const port = process.env.PORT || 3000;
 
+let urls = [];
+
 app.use(cors());
 
 app.use('/public', express.static(`${process.cwd()}/public`));
@@ -24,7 +26,27 @@ app.use(express.urlencoded({ extended: true}));
 
 app.post("/api/shorturl", (req, res) => {
   let originalUrl = req.body.url;
-  res.json({ original_url : originalUrl, short_url : 1})
+  let urlPair = { original_url : originalUrl, short_url : 1};
+  urls.push(urlPair);
+  res.json(urlPair);
+})
+
+app.get("/api/shorturl/:short_url", (req, res) => {
+  let shortUrl = req.params.short_url
+  let foundUrl = null;
+  
+  for (let i = 0; i < urls.length; i++) {
+    if (urls[i].short_url === shortUrl) {
+      foundUrl = urls[i];
+      break; // exit the loop once a match is found
+    }       
+  }
+
+  if (foundUrl !== null && foundUrl !== undefined) {
+    res.send({ "original_url": foundUrl });
+  } else  {
+    res.json({ "error": "original url not found from short url"})
+  }
 })
 
 app.listen(port, function() {
