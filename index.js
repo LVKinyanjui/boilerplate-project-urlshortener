@@ -24,12 +24,44 @@ app.get('/api/hello', function(req, res) {
 //Mount middleware to parse form data
 app.use(express.urlencoded({ extended: true}));
 
+const dns = require('dns');
+const { URL } = require('url');
+const { json } = require('body-parser');
+
+function validateUrl(inputUrl, callback) {
+  try {
+    const parsedUrl = new URL(inputUrl);
+    const hostname = parsedUrl.hostname;
+
+    dns.lookup(hostname, (err) => {
+      if (err) {
+        callback(false); // Invalid URL
+      } else {
+        callback(true); // Valid URL
+      }
+    });
+  } catch (error) {
+    callback(false); // Invalid URL format
+  }
+}
+
 app.post("/api/shorturl", (req, res) => {
   let originalUrl = req.body.url;
-  let urlPair = { original_url : originalUrl, short_url : 1};
-  urls.push(urlPair);
-  res.json(urlPair);
-})
+
+  const parsedUrl = new URL(originalUrl);
+  const hostname = parsedUrl.hostname;
+
+  dns.lookup(hostname, (err) => {
+    if (err) {
+      console.log('The URL is invalid.');
+      res.json({ error: 'invalid url' });
+    } else {
+      let urlPair = { original_url : originalUrl, short_url : 1};
+      urls.push(urlPair);
+      res.json(urlPair);
+    }
+  });
+});
 
 app.get("/api/shorturl/:short_url", (req, res) => {
   let shortUrl = req.params.short_url
